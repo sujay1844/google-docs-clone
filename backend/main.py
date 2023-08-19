@@ -1,5 +1,3 @@
-actions = []
-doc = []
 from typing import Annotated
 from transforms import doc, revision_log, apply_change
 import json
@@ -31,6 +29,13 @@ async def get_cookie_or_token(
 		raise WebSocketException(code=status.WS_1008_POLICY_VIOLATION)
 	return session or token
 
+@app.get("/doc")
+async def get_doc():
+	return {
+		"doc": ''.join(doc),
+		"revision": len(revision_log)
+	}
+
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(
 	websocket: WebSocket,
@@ -53,14 +58,12 @@ async def websocket_endpoint(
 				"change": data,
 				"revision": revision_id
 			}, websocket)
-			actions.append(data)
-			if data["action"] == 1:
-				doc.insert(data['position'], data['character'])
-			elif data["action"] == -1:
-				doc.pop(data['position'])
 			print(*doc, sep='')
 
 	except WebSocketDisconnect:
 		await manager.disconnect(websocket)
 		print(f"Client #{client_id} left chat")
-		doc.clear()
+		if manager.connections == []:
+			doc.clear()
+			revision_log.clear()
+			print("doc cleared")

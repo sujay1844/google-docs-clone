@@ -7,10 +7,19 @@
 	let pendingChanges: Change[] = [];
 	let currentRevision = 0;
 
-	const WS_URL = `ws://localhost:8000/ws/${id}`;
+	const URL = `localhost:8000`;
 	let socket: WebSocket;
-	function initSocket() {
-		socket = new WebSocket(WS_URL);
+	onMount(async () => {
+		try {
+			const res = await fetch(`http://${URL}/doc`);
+			const data = await res.json();
+			$doc = data.doc;
+			$newDoc = $doc;
+			currentRevision = data.revision;
+		} catch (err) {
+			console.log(err);
+		}
+		socket = new WebSocket(`ws://${URL}/ws/${id}`);
 		socket.onopen = () => {
 			console.log("Socket opened");
 		};
