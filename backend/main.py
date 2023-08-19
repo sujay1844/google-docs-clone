@@ -1,6 +1,7 @@
 actions = []
 doc = []
 from typing import Annotated
+from transforms import doc, revision_log, apply_change
 import json
 from fastapi import (
 	FastAPI,
@@ -41,9 +42,16 @@ async def websocket_endpoint(
 		while True:
 			data = await websocket.receive_json()
 			print(data)
-			await manager.broadcast({
-				"message": data,
-				"user": client_id
+			revision_id = apply_change(data)
+			# await manager.broadcast({
+			# 	"message": "new change",
+			# 	"change": data,
+			# 	"user": client_id
+			# }, websocket)
+			await manager.send_personal_message({
+				"message": "change applied",
+				"change": data,
+				"revision": revision_id
 			}, websocket)
 			actions.append(data)
 			if data["action"] == 1:

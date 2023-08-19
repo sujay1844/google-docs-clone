@@ -4,6 +4,8 @@
 	import { onMount } from "svelte";
 
 	const id = Math.floor(Math.random() * 100);
+	let pendingChanges: Change[] = [];
+	let currentRevision = 0;
 
 	const WS_URL = `ws://localhost:8000/ws/${id}`;
 	let socket: WebSocket;
