@@ -11,6 +11,7 @@ export interface Change {
 	position: number;
 	character: string;
 	timestamp: number;
+	revision: number;
 }
 
 export function getChange(doc: string, newDoc: string): Change | null {
@@ -29,7 +30,8 @@ export function getChange(doc: string, newDoc: string): Change | null {
 				action: action,
 				position: index,
 				character: diff[1],
-				timestamp: Date.now()
+				timestamp: Date.now(),
+				revision: 0
 			};
 			break;
 		}

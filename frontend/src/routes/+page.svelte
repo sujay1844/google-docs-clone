@@ -16,22 +16,30 @@
 			console.log("Socket closed");
 		};
 		socket.onmessage = (event) => {
-			const change: Change = JSON.parse(event.data).message;
-			$doc = applyChange($doc, change);
-			$newDoc = $doc;
+			const data = JSON.parse(event.data);
+			console.log(data);
+			if (data.message == "new change"){
+				const change: Change = data.change;
+				$doc = applyChange($doc, change);
+				$newDoc = $doc;
+			} else if (data.message == "change applied") {
+				pendingChanges = pendingChanges.filter(change => data.change != change);
+				currentRevision = data.revision;
+			}
 		};
 		socket.onerror = (e) => {
 			console.log("Error occured", e);
 		}
-	}
-	onMount(initSocket);
+	});
 
 	
 	function handleInput() {
 		const change: Change | null = getChange($doc, $newDoc);
 
 		if(change){
+			change.revision = currentRevision;
 			socket.send(JSON.stringify(change));
+			pendingChanges.push(change);
 			$doc = $newDoc;
 		}
 
