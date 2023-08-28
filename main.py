@@ -8,14 +8,17 @@ manager = ConnectionManager()
 async def pong():
 	return {"message": "pong"}
 
-@app.websocket("/ws/{client_id}")
+@app.websocket("/{client_id}/ws")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
-	await manager.connect(websocket)
+	await manager.connect([client_id, websocket])
 	try:
 		while True:
 			data = await websocket.receive_json()
-			await manager.boardcast(websocket, data)
+			# do transformation and other stuff here
 			print(data)
+			await manager.boardcast({
+				"change": data["change"],
+				"revision": data["revision"],
+			})
 	except WebSocketDisconnect:
-		manager.disconnect(websocket)
-		await manager.boardcast(websocket, {"message": f"User {client_id} left the chat"})
+		manager.disconnect([client_id, websocket])

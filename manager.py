@@ -2,16 +2,15 @@ from fastapi import WebSocket
 
 class ConnectionManager:
 	def __init__(self):
-		self.connections: list[WebSocket] = []
+		self.connections: list[list[int, WebSocket]] = []
 
-	async def connect(self, websocket: WebSocket):
-		await websocket.accept()
-		self.connections.append(websocket)
+	async def connect(self, connection: list[int, WebSocket]):
+		await connection[1].accept()
+		self.connections.append(connection)
 	
-	def disconnect(self, websocket: WebSocket):
-		self.connections.remove(websocket)
+	def disconnect(self, connection: list[int, WebSocket]):
+		self.connections.remove(connection)
 	
-	async def boardcast(self, websocket:WebSocket, data: dict):
-		for connection in self.connections:
-			if connection == websocket: continue
-			await connection.send_json(data)
+	async def boardcast(self, data: dict):
+		for client_id, websocket in self.connections:
+			await websocket.send_json(data)
