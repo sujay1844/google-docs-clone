@@ -11,6 +11,6 @@ class ConnectionManager:
 	def disconnect(self, connection: list[int, WebSocket]):
 		self.connections.remove(connection)
 	
-	async def boardcast(self, data: dict):
+	async def broadcast(self, data: dict):
 		for client_id, websocket in self.connections:
 			await websocket.send_json(data)
