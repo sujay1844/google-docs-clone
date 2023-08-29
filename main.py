@@ -1,6 +1,17 @@
+DELAY_IN_SECS = 0.5
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from manager import ConnectionManager
 import time
+import sqlite3
+
+from db import insert_operation, get_all_operations, create_table, reset_table, get_all_operations_since
+from transform import transform
+
+current_revision = 0
+
+connection = sqlite3.connect("dev.db")
+cursor = connection.cursor()
+create_table(cursor, connection)
 
 app = FastAPI()
 manager = ConnectionManager()
@@ -11,16 +22,37 @@ async def pong():
 
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
+	global current_revision
 	await manager.connect([client_id, websocket])
 	try:
 		while True:
 			data = await websocket.receive_json()
-			# do transformation and other stuff here
-			time.sleep(2)
-			print(data)
-			await manager.broadcast({
-				"change": data["change"],
-				"revision": data["revision"],
-			})
+
+			if data['revision'] > current_revision:
+				current_revision = data['revision']
+
+			time.sleep(DELAY_IN_SECS)
+			required_operations = get_all_operations_since(cursor, data['revision'])
+			for operation in required_operations:
+				data = transform(data, operation)
+			
+			print(f"{data = }")
+			print(f"{required_operations = }")
+			data['revision'] = current_revision + 1
+			print(f"{data = }")
+			insert_operation(cursor, connection, data)
+
+			await manager.broadcast(data)
 	except WebSocketDisconnect:
 		manager.disconnect([client_id, websocket])
+
+@app.get("/operations")
+async def get_operations():
+	return get_all_operations(cursor)
+
+@app.get("/reset")
+async def reset():
+	global current_revision
+	reset_table(cursor, connection)
+	current_revision = 0
+	return {"message": "reset"}
