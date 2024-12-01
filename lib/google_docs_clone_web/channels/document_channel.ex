@@ -7,7 +7,7 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
   end
 
   def handle_in("delta", %{"body" => body}, socket) do
-    broadcast!(socket, "delta", %{body: body})
+    broadcast_from!(socket, "delta", %{body: body})
     {:noreply, socket}
   end
 end
