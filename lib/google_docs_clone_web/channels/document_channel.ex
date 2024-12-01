@@ -2,7 +2,12 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
   use Phoenix.Channel
   require Logger
 
-  def join("document:lobby", _message, socket) do
+  def join("document:default", _message, socket) do
     {:ok, socket}
+  end
+
+  def handle_in("delta", %{"body" => body}, socket) do
+    broadcast!(socket, "delta", %{body: body})
+    {:noreply, socket}
   end
 end
