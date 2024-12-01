@@ -15,7 +15,7 @@ defmodule GoogleDocsCloneWeb.Endpoint do
     websocket: [connect_info: [session: @session_options]],
     longpoll: [connect_info: [session: @session_options]]
 
-  socket "/socket", GoogleDocsCloneWeb.UserSocket,
+  socket "/socket", GoogleDocsCloneWeb.DocumentSocket,
     websocket: true,
     longpoll: false
 
