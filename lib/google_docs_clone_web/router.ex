@@ -21,6 +21,12 @@ defmodule GoogleDocsCloneWeb.Router do
     get "/ping", PageController, :ping
   end
 
+  scope "/document", GoogleDocsCloneWeb do
+    pipe_through :browser
+
+    get "/:id", DocumentController, :show
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", GoogleDocsCloneWeb do
   #   pipe_through :api
