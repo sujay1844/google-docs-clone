@@ -56,18 +56,20 @@ socket.connect()
 // Now that you are connected, you can join channels with a topic.
 // Let's assume you have a channel with a topic named `room` and the
 // subtopic is its id - in this case 42:
-let channel = socket.channel("document:default", {})
+const channel = socket.channel("document:default", {})
 
-let input = document.getElementById("input")
-input.addEventListener("keyup", function(event) {
-  if (event.key === 'Enter') {
-    channel.push("delta", {body: input.value})
-    input.value = ""
-  }
+const quill = new Quill("#editor", {
+  theme: "snow",
+})
+
+quill.on("text-change", (delta, oldDelta, source) => {
+  if (source !== "user") return;
+  channel.push("delta", {body: delta})
 })
 
 channel.on("delta", ({body}) => {
-  console.log("Received delta", body)
+  console.log("received delta", body)
+  quill.updateContents(body)
 })
 
 channel.join()
