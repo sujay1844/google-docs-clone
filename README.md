@@ -1,18 +1,16 @@
 # GoogleDocsClone
 
-To start your Phoenix server:
+If you have docker installed, you can run the following command to start the server:
 
-  * Run `mix setup` to install and setup dependencies
-  * Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
+```bash
+docker-compose up
+```
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
-Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+To start your Phoenix server locally, you need to have Elixir and Erlang installed. You can follow the instructions [here](https://elixir-lang.org/install.html).
 
-## Learn more
+- Run `mix setup` to install and setup dependencies
+- Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
-  * Official website: https://www.phoenixframework.org/
-  * Guides: https://hexdocs.pm/phoenix/overview.html
-  * Docs: https://hexdocs.pm/phoenix
-  * Forum: https://elixirforum.com/c/phoenix-forum
-  * Source: https://github.com/phoenixframework/phoenix
+Ready to run in production? [Check the deployment guides](https://hexdocs.pm/phoenix/deployment.html).
