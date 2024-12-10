@@ -61,6 +61,11 @@ const channel = socket.channel("document:" + id, {})
 
 const quill = new Quill("#editor", {
   theme: "snow",
+  modules: {
+    toolbar: [
+      ["bold", "italic", "underline"],
+    ]
+  }
 })
 
 quill.on("text-change", (delta, oldDelta, source) => {
