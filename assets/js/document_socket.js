@@ -16,12 +16,12 @@ const quill = new Quill("#editor", {
 
 quill.on("text-change", (delta, _, source) => {
   if (source !== "user") return;
-  channel.push("delta", { body: delta, revision: 0 });
+  channel.push("delta", { delta: delta, revision: 0 });
 });
 
-channel.on("delta", ({ body }) => {
-  console.log("received delta", body);
-  quill.updateContents(body);
+channel.on("delta", ({ delta }) => {
+  console.log("received delta", delta);
+  quill.updateContents(delta);
 });
 
 channel.on("ack", ({ revision }) => {
