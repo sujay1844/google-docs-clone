@@ -1,16 +1,24 @@
 import { channel } from "./document_socket";
 import { quill } from "./quill";
+import { pendingOperations } from "./queue";
 
 quill.on("text-change", (delta, _, source) => {
   if (source !== "user") return;
-  channel.push("delta", { delta: delta, revision: 0 });
+  pendingOperations.add(delta);
+  channel.push("delta", { delta, revision: 0 });
 });
 
-channel.on("delta", ({ delta }) => {
-  console.log("received delta", delta);
-  quill.updateContents(delta);
+channel.on("delta", ({ delta, revision }) => {
+  _ = revision;
+
+  const transformedDelta = pendingOperations.transform(delta);
+  quill.updateContents(transformedDelta);
 });
 
-channel.on("ack", ({ revision }) => {
-  console.log("received ack", revision);
+channel.on("ack", ({ delta }) => {
+  pendingOperations.remove(delta);
+
+  // Send the next delta in the queue
+  const nextDelta = pendingOperations.peek();
+  channel.push("delta", { delta: nextDelta, revision: 0 });
 });
