@@ -14,7 +14,10 @@ class OperationQueue {
   }
 
   remove(delta) {
-    this.queue = this.queue.filter((item) => item !== delta);
+    // TODO: Find a better way to compare deltas
+    this.queue = this.queue.filter(
+      (item) => JSON.stringify(item) != JSON.stringify(delta),
+    );
     this.saveQueue();
   }
 
