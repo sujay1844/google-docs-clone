@@ -8,10 +8,10 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
 
   def handle_in("delta", %{"delta" => delta, "revision" => revision}, socket) do
     # broadcast the delta to all clients except the sender
-    broadcast_from!(socket, "delta", %{delta: delta})
+    broadcast_from!(socket, "delta", %{delta: delta, revision: revision})
 
     # send ack to the sender
-    push(socket, "ack", %{revision: revision})
+    push(socket, "ack", %{delta: delta})
 
     {:noreply, socket}
   end
