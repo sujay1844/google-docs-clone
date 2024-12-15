@@ -1,7 +1,11 @@
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
 
-<p id="document-id" class="hidden"><%= @id %></p>
-<p id="document-content"><%= @content %></p>
 <div class="p-4 w-full">
   <div id="editor" />
 </div>
+<script>
+  window.props = {
+    document_id: "<%= @id %>",
+    document_content: "<%= @content %>"
+  };
+</script>

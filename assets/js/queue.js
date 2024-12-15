@@ -47,5 +47,5 @@ function transform(op1, op2) {
   return op1;
 }
 
-const id = document.getElementById("document-id").innerText;
+const id = window.props.document_id;
 export const pendingOperations = new OperationQueue(`document:${id}`);

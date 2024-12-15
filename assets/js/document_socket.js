@@ -3,7 +3,7 @@ import { Socket } from "phoenix";
 let socket = new Socket("/socket", { params: { token: window.userToken } });
 socket.connect();
 
-const id = document.getElementById("document-id").innerText;
+const id = window.props.document_id;
 const channel = socket.channel("document:" + id, {});
 
 channel
