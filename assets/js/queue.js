@@ -1,3 +1,5 @@
+import _ from "lodash";
+
 class OperationQueue {
   constructor(key) {
     this.key = key;
@@ -15,9 +17,7 @@ class OperationQueue {
 
   remove(delta) {
     // TODO: Find a better way to compare deltas
-    this.queue = this.queue.filter(
-      (item) => JSON.stringify(item) != JSON.stringify(delta),
-    );
+    this.queue = this.queue.filter((item) => !_.isEqual(item, delta));
     this.saveQueue();
   }
 
@@ -46,7 +46,7 @@ class OperationQueue {
 }
 
 function transform(op1, op2) {
-  _ = op2;
+  op2;
   return op1;
 }
 
