@@ -7,9 +7,4 @@ const quill = new Quill("#editor", {
   },
 });
 
-const content = window.props.document_content;
-quill.updateContents({
-  ops: [{ insert: content }],
-});
-
 export { quill };
