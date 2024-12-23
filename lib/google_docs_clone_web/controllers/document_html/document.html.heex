@@ -5,6 +5,6 @@
 <script>
   window.props = {
     document_id: "<%= @id %>",
-    document_content: "<%= @content %>"
+    document_content: atob("<%= @content %>"),
   };
 </script>

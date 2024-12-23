@@ -1,5 +1,6 @@
 defmodule GoogleDocsCloneWeb.DocumentController do
   use GoogleDocsCloneWeb, :controller
+  alias GoogleDocsCloneWeb.DefaultDocumentContent
   alias GoogleDocsClone.Repo
   alias GoogleDocsClone.Documents
 
@@ -7,7 +8,7 @@ defmodule GoogleDocsCloneWeb.DocumentController do
     document =
       case Repo.get(Documents, id) do
         nil ->
-          %Documents{id: id, content: "Sample document content"}
+          %Documents{id: id, content: DefaultDocumentContent.content()}
           |> Repo.insert!()
 
         document ->
@@ -17,7 +18,7 @@ defmodule GoogleDocsCloneWeb.DocumentController do
     conn
     |> put_layout(false)
     |> assign(:id, id)
-    |> assign(:content, document.content)
+    |> assign(:content, Base.encode64(document.content))
     |> render(:document)
   end
 end

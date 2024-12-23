@@ -36,3 +36,9 @@ quill.on("text-change", () => {
   const preview = document.getElementById("preview");
   preview.innerHTML = marked.parse(currentContent);
 });
+
+// Fill the editor with the document content for initial load
+const content = window.props.document_content;
+quill.updateContents({
+  ops: [{ insert: content }],
+});
