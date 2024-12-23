@@ -1,6 +1,9 @@
 import { channel } from "./document_socket";
 import { quill } from "./quill";
 import { pendingOperations } from "./queue";
+import { marked } from "marked";
+
+marked.use({ gfm: true });
 
 let currentRevision = 0;
 
@@ -24,4 +27,12 @@ channel.on("ack", ({ delta }) => {
   if (nextDelta) {
     channel.push("delta", { delta: nextDelta, revision: currentRevision });
   }
+});
+
+// Update preview when the document is updated
+quill.on("text-change", () => {
+  // get current content from quill
+  const currentContent = quill.getText();
+  const preview = document.getElementById("preview");
+  preview.innerHTML = marked.parse(currentContent);
 });
