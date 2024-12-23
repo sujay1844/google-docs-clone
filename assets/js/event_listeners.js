@@ -1,5 +1,5 @@
 import { channel } from "./document_socket";
-import { quill } from "./quill";
+import { deltaToOperation, operationToDelta, quill } from "./quill";
 import { pendingOperations } from "./queue";
 import { marked } from "marked";
 import { emojify } from "node-emoji";
@@ -15,23 +15,28 @@ let currentRevision = 0;
 
 quill.on("text-change", (delta, _, source) => {
   if (source !== "user") return;
-  pendingOperations.add(delta);
-  channel.push("delta", { delta, revision: currentRevision });
+  const operation = deltaToOperation(delta);
+  pendingOperations.add(operation);
+  channel.push("operation", { operation, revision: currentRevision });
 });
 
-channel.on("delta", ({ delta, revision }) => {
-  const transformedDelta = pendingOperations.transform(delta);
-  quill.updateContents(transformedDelta);
+channel.on("operation", ({ operation, revision }) => {
+  const transformedOperation = pendingOperations.transform(operation);
+  const delta = operationToDelta(transformedOperation);
+  quill.updateContents(delta);
   currentRevision = revision;
 });
 
-channel.on("ack", ({ delta }) => {
-  pendingOperations.remove(delta);
+channel.on("ack", ({ operation }) => {
+  pendingOperations.remove(operation);
 
   // Send the next delta in the queue
-  const nextDelta = pendingOperations.peek();
-  if (nextDelta) {
-    channel.push("delta", { delta: nextDelta, revision: currentRevision });
+  const nextOperation = pendingOperations.peek();
+  if (nextOperation) {
+    channel.push("operation", {
+      operation: nextOperation,
+      revision: currentRevision,
+    });
   }
 });
 
