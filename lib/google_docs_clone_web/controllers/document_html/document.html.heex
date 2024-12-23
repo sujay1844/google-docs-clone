@@ -1,6 +1,10 @@
-<div class="p-4 w-full flex gap-1">
-  <div id="editor" class="w-full flex-1 border-2 min-h-[95vh] px-[25px] py-[30px]" />
-  <div id="preview" class="w-full flex-1 border-2 bg-slate-100 px-[25px] py-[30px] prose" />
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.bubble.css" rel="stylesheet" />
+
+<div class="p-4 w-full gap-1 h-screen grid grid-cols-2">
+  <div>
+    <div id="editor" class="p-6 bg-slate-100" />
+  </div>
+  <div id="preview" class="prose p-6 w-full" />
 </div>
 <script>
   window.props = {
