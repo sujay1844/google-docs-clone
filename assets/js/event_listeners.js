@@ -2,8 +2,14 @@ import { channel } from "./document_socket";
 import { quill } from "./quill";
 import { pendingOperations } from "./queue";
 import { marked } from "marked";
+import { emojify } from "node-emoji";
 
 marked.use({ gfm: true });
+const parseMarkdown = (str) => {
+  const emojiRenderer = (match) => emojify(match);
+  str = str.replace(/(:.*:)/g, emojiRenderer);
+  return marked.parse(str);
+};
 
 let currentRevision = 0;
 
@@ -34,7 +40,7 @@ quill.on("text-change", () => {
   // get current content from quill
   const currentContent = quill.getText();
   const preview = document.getElementById("preview");
-  preview.innerHTML = marked.parse(currentContent);
+  preview.innerHTML = parseMarkdown(currentContent);
 });
 
 // Fill the editor with the document content for initial load
