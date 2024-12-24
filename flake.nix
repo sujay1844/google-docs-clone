@@ -9,7 +9,13 @@
       pkgs = nixpkgs.legacyPackages.${system};
     in {
       devShells.${system}.default = pkgs.mkShell {
-        buildInputs = with pkgs; [ elixir erlang elixir-ls inotify-tools ];
+        buildInputs = with pkgs; [
+          elixir
+          erlang
+          elixir-ls
+          inotify-tools
+          tailwindcss-language-server
+        ];
 
         shellHook = ''
           ${pkgs.elixir_ls}/bin/elixir-ls > /tmp/elixir-ls.log 2>&1 &
