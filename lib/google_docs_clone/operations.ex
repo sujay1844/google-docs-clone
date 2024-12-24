@@ -3,7 +3,7 @@ defmodule GoogleDocsClone.Operations do
   import Ecto.Changeset
 
   schema "operations" do
-    belongs_to :document, GoogleDocsClone.Documents
+    belongs_to :document, GoogleDocsClone.Documents, type: :string
 
     field :type, :string
     field :position, :integer
