@@ -16,7 +16,6 @@ class OperationQueue {
   }
 
   remove(delta) {
-    // TODO: Find a better way to compare deltas
     this.queue = this.queue.filter((item) => !_.isEqual(item, delta));
     this.saveQueue();
   }
