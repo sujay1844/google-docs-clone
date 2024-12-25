@@ -8,7 +8,11 @@ defmodule GoogleDocsCloneWeb.DocumentController do
     document =
       case Repo.get(Documents, id) do
         nil ->
-          %Documents{id: id, content: DefaultDocumentContent.content()}
+          %Documents{
+            id: id,
+            content: DefaultDocumentContent.content(),
+            revision: 0
+          }
           |> Repo.insert!()
 
         document ->
@@ -19,6 +23,7 @@ defmodule GoogleDocsCloneWeb.DocumentController do
     |> put_layout(false)
     |> assign(:id, id)
     |> assign(:content, Base.encode64(document.content))
+    |> assign(:revision, document.revision)
     |> render(:document)
   end
 end

@@ -11,7 +11,7 @@ const parseMarkdown = (str) => {
   return marked.parse(str);
 };
 
-let currentRevision = 0;
+let currentRevision = window.props.revision;
 
 quill.on("text-change", (delta, _, source) => {
   if (source !== "user") return;
@@ -27,7 +27,7 @@ channel.on("operation", ({ operation, revision }) => {
   currentRevision = revision;
 });
 
-channel.on("ack", ({ operation }) => {
+channel.on("ack", ({ operation, revision, new_revision }) => {
   pendingOperations.remove(operation);
 
   // Send the next delta in the queue
@@ -38,6 +38,7 @@ channel.on("ack", ({ operation }) => {
       revision: currentRevision,
     });
   }
+  currentRevision = new_revision;
 });
 
 // Update preview when the document is updated

@@ -7,14 +7,15 @@ defmodule GoogleDocsClone.Documents do
 
   schema "documents" do
     field :content, :string
+    field :revision, :integer
 
     timestamps(type: :utc_datetime)
   end
 
   def changeset(document, params \\ %{}) do
     document
-    |> cast(params, [:content])
-    |> validate_required([:content])
+    |> cast(params, [:content, :revision])
+    |> validate_required([:content, :revision])
   end
 end
 

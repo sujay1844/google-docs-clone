@@ -18,10 +18,11 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
 
     # apply the operation to the document
     new_content = DocumentEditor.apply_operation(document.content, operation)
+    new_revision = document.revision + 1
 
     # update the document
     document
-    |> Documents.changeset(%{content: new_content})
+    |> Documents.changeset(%{content: new_content, revision: new_revision})
     |> Repo.update!()
 
     # add operation to database
@@ -32,10 +33,10 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
     |> Repo.insert!()
 
     # send ack to the sender
-    push(socket, "ack", %{operation: operation})
+    push(socket, "ack", %{operation: operation, revision: revision, new_revision: new_revision})
 
     # broadcast the delta to all clients except the sender
-    broadcast_from!(socket, "operation", %{operation: operation, revision: revision + 1})
+    broadcast_from!(socket, "operation", %{operation: operation, revision: new_revision})
 
     {:noreply, socket}
   end
