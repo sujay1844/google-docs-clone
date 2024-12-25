@@ -27,6 +27,7 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
     # add operation to database
     operation
     |> Map.put("document_id", id)
+    |> Map.put("revision", revision)
     |> then(&Operations.changeset(%Operations{}, &1))
     |> Repo.insert!()
 

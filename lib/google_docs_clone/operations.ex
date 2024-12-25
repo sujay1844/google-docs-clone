@@ -5,6 +5,7 @@ defmodule GoogleDocsClone.Operations do
   schema "operations" do
     belongs_to :document, GoogleDocsClone.Documents, type: :string
 
+    field :revision, :integer
     field :type, :string
     field :position, :integer
     field :content, :string
@@ -15,8 +16,8 @@ defmodule GoogleDocsClone.Operations do
 
   def changeset(operation, params \\ %{}) do
     operation
-    |> cast(params, [:document_id, :type, :position, :content, :length])
-    |> validate_required([:document_id, :type])
+    |> cast(params, [:document_id, :revision, :type, :position, :content, :length])
+    |> validate_required([:document_id, :revision, :type])
     |> foreign_key_constraint(:document_id)
   end
 end
