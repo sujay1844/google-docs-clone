@@ -21,6 +21,7 @@ const deltaToOperation = (delta) => {
     } else if (op.insert) {
       operation.type = "insert";
       operation.content += op.insert;
+      operation.length += op.insert.length;
     } else if (op.delete) {
       operation.type = "delete";
       operation.length += op.delete;
