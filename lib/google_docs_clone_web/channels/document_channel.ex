@@ -4,6 +4,7 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
   alias GoogleDocsClone.Documents
   alias GoogleDocsClone.DocumentEditor
   alias GoogleDocsClone.Operations
+  alias GoogleDocsClone.OperationalTransform
   require Logger
 
   def join("document:" <> _id, _message, socket) do
@@ -25,9 +26,18 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
     |> Documents.changeset(%{content: new_content, revision: new_revision})
     |> Repo.update!()
 
+    # transform operation against newer operations
+    operation =
+      Enum.reduce(
+        Operations.get_newer_operations(id, revision),
+        operation,
+        fn old, new ->
+          OperationalTransform.transform(new, old)
+        end
+      )
+
     # add operation to database
     operation
-    # TODO: Add operational transformation for operations newer than recieved revision
     |> Map.put("document_id", id)
     |> Map.put("revision", revision)
     |> then(&Operations.changeset(%Operations{}, &1))
