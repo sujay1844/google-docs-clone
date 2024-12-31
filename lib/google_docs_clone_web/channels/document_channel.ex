@@ -26,18 +26,9 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
     |> Documents.changeset(%{content: new_content, revision: new_revision})
     |> Repo.update!()
 
-    # transform operation against newer operations
-    operation =
-      Enum.reduce(
-        Operations.get_newer_operations(id, revision),
-        operation,
-        fn old, new ->
-          OperationalTransform.transform(new, old)
-        end
-      )
-
     # add operation to database
     operation
+    |> OperationalTransform.transform_against_newer_operations(id, revision)
     |> Map.put("document_id", id)
     |> Map.put("revision", revision)
     |> then(&Operations.changeset(%Operations{}, &1))

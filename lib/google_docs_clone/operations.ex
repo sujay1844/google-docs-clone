@@ -22,13 +22,4 @@ defmodule GoogleDocsClone.Operations do
     |> validate_required([:document_id, :revision, :type])
     |> foreign_key_constraint(:document_id)
   end
-
-  def get_newer_operations(id, revision) do
-    query =
-      from o in "operations",
-        where: o.document_id == ^id and o.revision > ^revision,
-        order_by: [asc: o.revision]
-
-    Repo.all(query)
-  end
 end
