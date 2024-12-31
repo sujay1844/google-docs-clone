@@ -1,8 +1,6 @@
 defmodule GoogleDocsClone.Operations do
   use Ecto.Schema
   import Ecto.Changeset
-  import Ecto.Query
-  alias GoogleDocsClone.Repo
 
   schema "operations" do
     belongs_to :document, GoogleDocsClone.Documents, type: :string
