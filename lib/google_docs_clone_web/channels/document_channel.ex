@@ -27,6 +27,7 @@ defmodule GoogleDocsCloneWeb.DocumentChannel do
 
     # add operation to database
     operation
+    # TODO: Add operational transformation for operations newer than recieved revision
     |> Map.put("document_id", id)
     |> Map.put("revision", revision)
     |> then(&Operations.changeset(%Operations{}, &1))
