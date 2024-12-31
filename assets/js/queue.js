@@ -44,9 +44,33 @@ class OperationQueue {
   }
 }
 
-function transform(op1, op2) {
-  op2;
-  return op1;
+function transform(old, new_) {
+  if (old.type === "insert") {
+    if (new_.position < old.position) {
+      return new_;
+    } else if (new_.position === old.position) {
+      // WARN: Might not be correct. Intended for testing.
+      return new_;
+    } else if (new_.position > old.position) {
+      return {
+        ...new_,
+        position: new_.position + old.length,
+      };
+    }
+  } else if (old.type === "delete") {
+    if (new_.position <= old.position) {
+      return new_;
+    } else if (new_.position > old.position) {
+      return {
+        ...new_,
+        position: new_.position - old.length,
+      };
+    }
+  }
+  console.error("Unsupported operation type");
+  console.error("Old: ", old);
+  console.error("New: ", new_);
+  throw new Error("Unsupported operation type");
 }
 
 const id = window.props.document_id;
