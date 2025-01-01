@@ -36,3 +36,11 @@ To start your Phoenix server locally, you need to have Elixir and Erlang install
 - Start Phoenix endpoint with `mix phx.server` or inside IEx with `iex -S mix phx.server`
 
 Ready to run in production? [Check the deployment guides](https://hexdocs.pm/phoenix/deployment.html).
+
+# Further improvements
+
+- Add user authentication
+- Implement consistent undo and redo using MVSD(Multi-Version Single-Display)
+- Improve responsiveness on mobile devices
+- Display cursor positions of other users in real-time
+- Export documents as PDF
