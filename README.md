@@ -10,12 +10,16 @@ This project is a collaborative text editor which allows multiple users to edit 
 Operational Transformation (OT) is a foundational technique for maintaining consistency in collaborative text editors. It enables multiple users to simultaneously edit shared documents by ensuring that operations (e.g., insert, delete) from different users are applied in a consistent order across all instances.
 
 1. **Core Operations**: OT handles two primary operations:
+
    - Insert: Adds content at a specific position.
    - Delete: Removes content from a specific position.
+
 2. **Consistency Model**: OT ensures,
-   - **Convergence**: All users see the same document state after all operations are applied.
-   - **Causality Preservation**: Operations are applied respecting their causal order.
-   - **Intention Preservation**: Intended effects of operations are maintained despite concurrent edits
+
+   - Convergence: All users see the same document state after all operations are applied.
+   - Causality Preservation: Operations are applied respecting their causal order.
+   - Intention Preservation: Intended effects of operations are maintained despite concurrent edits
+
 3. **Transformations**: When operations conflict (e.g., two users edit the same text simultaneously), OT adjusts them using transformation functions. These functions modify operations so they integrate smoothly with concurrent changes, preserving the effects of all operations where possible.
 
 > Reference: David Sun, Steven Xia, Chengzheng Sun, and David Chen. 2004. Operational transformation for collaborative word processing. In Proceedings of the 2004 ACM conference on Computer supported cooperative work (CSCW '04). Association for Computing Machinery, New York, NY, USA, 437–446. https://doi.org/10.1145/1031607.1031681
