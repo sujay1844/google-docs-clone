@@ -1,45 +1,45 @@
 defmodule GoogleDocsCloneWeb.DocumentChannel do
   use Phoenix.Channel
-  alias GoogleDocsClone.Repo
-  alias GoogleDocsClone.Documents
-  alias GoogleDocsClone.DocumentEditor
-  alias GoogleDocsClone.Operations
-  alias GoogleDocsClone.OperationalTransform
   require Logger
 
-  def join("document:" <> _id, _message, socket) do
+  alias GoogleDocsClone.DocumentServer
+
+  @impl true
+  def join("document:" <> _id, _params, socket) do
     {:ok, socket}
   end
 
-  def handle_in("operation", %{"operation" => operation, "revision" => revision}, socket) do
-    # get the document id
-    "document:" <> id = socket.topic
-    # get the document
-    document = Repo.get(Documents, id)
+  @impl true
+  def handle_in(
+        "operation",
+        %{"delta" => delta, "revision" => base, "id" => op_id} = _payload,
+        socket
+      )
+      when is_integer(base) and base >= 0 and is_binary(op_id) do
+    "document:" <> doc_id = socket.topic
 
-    # apply the operation to the document
-    new_content = DocumentEditor.apply_operation(document.content, operation)
-    new_revision = document.revision + 1
+    case DocumentServer.apply_delta(doc_id, delta, base) do
+      {:ok, transformed, new_revision} ->
+        # Broadcast to *all* subscribers (including sender). The sender recognizes
+        # its own op via `id` and treats it as an ack. Using broadcast for the
+        # sender's path too keeps the ordering of acks and remote ops consistent.
+        broadcast!(socket, "operation", %{
+          delta: transformed,
+          revision: new_revision,
+          id: op_id
+        })
 
-    # update the document
-    document
-    |> Documents.changeset(%{content: new_content, revision: new_revision})
-    |> Repo.update!()
+        {:noreply, socket}
 
-    # add operation to database
-    operation
-    |> OperationalTransform.transform_against_newer_operations(id, revision)
-    |> Map.put("document_id", id)
-    |> Map.put("revision", revision)
-    |> then(&Operations.changeset(%Operations{}, &1))
-    |> Repo.insert!()
+      {:error, reason} ->
+        Logger.warning("operation rejected on #{doc_id}: #{reason}")
+        push(socket, "error", %{reason: to_string(reason), id: op_id})
+        {:noreply, socket}
+    end
+  end
 
-    # send ack to the sender
-    push(socket, "ack", %{operation: operation, revision: revision, new_revision: new_revision})
-
-    # broadcast the delta to all clients except the sender
-    broadcast_from!(socket, "operation", %{operation: operation, revision: new_revision})
-
+  def handle_in("operation", _payload, socket) do
+    push(socket, "error", %{reason: "malformed_operation"})
     {:noreply, socket}
   end
 end

@@ -17,8 +17,8 @@ defmodule GoogleDocsClone.Application do
       {Phoenix.PubSub, name: GoogleDocsClone.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: GoogleDocsClone.Finch},
-      # Start a worker by calling: GoogleDocsClone.Worker.start_link(arg)
-      # {GoogleDocsClone.Worker, arg},
+      {Registry, keys: :unique, name: GoogleDocsClone.DocumentRegistry},
+      {DynamicSupervisor, strategy: :one_for_one, name: GoogleDocsClone.DocumentSupervisor},
       # Start to serve requests, typically the last entry
       GoogleDocsCloneWeb.Endpoint
     ]

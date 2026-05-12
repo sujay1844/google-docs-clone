@@ -6,18 +6,16 @@ defmodule GoogleDocsClone.Operations do
     belongs_to :document, GoogleDocsClone.Documents, type: :string
 
     field :revision, :integer
-    field :type, :string
-    field :position, :integer
-    field :content, :string
-    field :length, :integer
+    field :delta, :string
 
     timestamps(type: :utc_datetime)
   end
 
   def changeset(operation, params \\ %{}) do
     operation
-    |> cast(params, [:document_id, :revision, :type, :position, :content, :length])
-    |> validate_required([:document_id, :revision, :type])
+    |> cast(params, [:document_id, :revision, :delta])
+    |> validate_required([:document_id, :revision, :delta])
     |> foreign_key_constraint(:document_id)
+    |> unique_constraint([:document_id, :revision])
   end
 end

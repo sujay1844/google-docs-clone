@@ -1,29 +1,15 @@
 defmodule GoogleDocsCloneWeb.DocumentController do
   use GoogleDocsCloneWeb, :controller
-  alias GoogleDocsCloneWeb.DefaultDocumentContent
-  alias GoogleDocsClone.Repo
-  alias GoogleDocsClone.Documents
+  alias GoogleDocsClone.DocumentServer
 
   def show(conn, %{"id" => id}) do
-    document =
-      case Repo.get(Documents, id) do
-        nil ->
-          %Documents{
-            id: id,
-            content: DefaultDocumentContent.content(),
-            revision: 0
-          }
-          |> Repo.insert!()
-
-        document ->
-          document
-      end
+    {:ok, %{content: content, revision: revision}} = DocumentServer.snapshot(id)
 
     conn
     |> put_layout(false)
     |> assign(:id, id)
-    |> assign(:content, Base.encode64(document.content))
-    |> assign(:revision, document.revision)
+    |> assign(:content, Base.encode64(content))
+    |> assign(:revision, revision)
     |> render(:document)
   end
 end
